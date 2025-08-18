@@ -1,12 +1,9 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-"""
-Run YOLOv5 detection inference with traffic light class labels (红灯、黄灯、绿灯)
-"""
+"""Run YOLOv5 detection inference with traffic light class labels (红灯、黄灯、绿灯)."""
 
 import argparse
 import csv
 import os
-import platform
 import sys
 from pathlib import Path
 
@@ -19,6 +16,7 @@ if str(ROOT) not in sys.path:
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative path
 
 from ultralytics.utils.plotting import Annotator, colors, save_one_box
+
 from models.common import DetectMultiBackend
 from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
 from utils.general import (
@@ -34,17 +32,13 @@ from utils.general import (
     non_max_suppression,
     print_args,
     scale_boxes,
-    strip_optimizer,
     xyxy2xywh,
 )
 from utils.torch_utils import select_device, smart_inference_mode
 
 # 自定义类别映射（原始类别索引: 交通灯标签）
-CLASS_MAPPING = {
-    0: "黄灯",
-    1: "红灯",
-    2: "绿灯"
-}
+CLASS_MAPPING = {0: "黄灯", 1: "红灯", 2: "绿灯"}
+
 
 @smart_inference_mode()
 def run(
@@ -116,7 +110,7 @@ def run(
 
     # 模型预热
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))
-    seen, windows, dt = 0, [], (Profile(device=device), Profile(device=device), Profile(device=device))
+    seen, _windows, dt = 0, [], (Profile(device=device), Profile(device=device), Profile(device=device))
 
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
@@ -158,7 +152,9 @@ def run(
 
             p = Path(p)
             save_path = str(save_dir / p.name)
-            txt_path = str(save_dir / "labels" / p.stem) + f"_{frame}.txt" if dataset.mode != "image" else f"{p.stem}.txt"
+            txt_path = (
+                str(save_dir / "labels" / p.stem) + f"_{frame}.txt" if dataset.mode != "image" else f"{p.stem}.txt"
+            )
             annotator = Annotator(im0, line_width=line_thickness, example=str(model.names))
 
             if len(det):
